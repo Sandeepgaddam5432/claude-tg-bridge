@@ -478,7 +478,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   // Health check
   if (req.url === "/" || req.url === "/health") {
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ status: "ok", service: "anthropic-proxy", model: "glm-5.2-plus" }));
+    res.end(JSON.stringify({ status: "ok", service: "anthropic-proxy", backend: "z-ai-glm" }));
     return;
   }
 
@@ -609,13 +609,12 @@ server.listen(PORT, "127.0.0.1", () => {
   console.log(`  Listening on: http://127.0.0.1:${PORT}`);
   console.log(`  Endpoint:     POST /v1/messages`);
   console.log(`  Backend:      ${ZAI_BASE_URL}`);
-  console.log(`  Default model: glm-5.2-plus`);
+  console.log(`  Model:        GLM (whatever Z.AI serves)`);
   console.log(`════════════════════════════════════════════════`);
   console.log("");
   console.log("Use with Claude Code:");
   console.log(`  ANTHROPIC_BASE_URL=http://127.0.0.1:${PORT} \\`);
   console.log(`  ANTHROPIC_API_KEY=dummy \\`);
-  console.log(`  ANTHROPIC_MODEL=glm-5.2-plus \\`);
   console.log(`  claude -p "your prompt"`);
   console.log("");
 });
