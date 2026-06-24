@@ -1,0 +1,21 @@
+{
+  "name": "claude-tg-bridge",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Real Claude Code CLI bridged to Telegram, powered by GLM-5.2-Plus via Z.AI proxy",
+  "scripts": {
+    "start:proxy": "bun run anthropic_proxy.ts",
+    "start:tg": "bun run tg_bridge.ts",
+    "start": "bash start.sh",
+    "test": "bash test_claude.sh"
+  },
+  "dependencies": {
+    "z-ai-web-dev-sdk": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "bun": ">=1.3.0"
+  }
+}
