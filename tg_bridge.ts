@@ -320,12 +320,29 @@ async function handleTgMessage(msg: any) {
     const proxyAlive = await isProxyAlive();
     let out = `📊 *System Status*\n\n`;
     out += `🤖 Claude Code: 2.1.x\n`;
-    out += `🧠 Backend: GLM via Z.AI proxy\n`;
+    out += `🧠 Requested model: \`${MODEL}\`\n`;
     out += `🔌 Proxy: ${proxyAlive ? "✅ running" : "❌ down"}\n`;
     out += `🌐 Proxy URL: \`${PROXY_URL}\`\n`;
     out += `📁 Working dir: \`${currentWorkDir}\`\n`;
-    out += `⏱️ Uptime: ${Math.round(process.uptime())}s`;
+    out += `⏱️ Uptime: ${Math.round(process.uptime())}s\n\n`;
+    out += `_Note: Z.AI proxy serves GLM. Check proxy log for actual backend model._`;
     await tgSendText(chatId, out, "Markdown");
+    return;
+  }
+
+  if (text === "/model") {
+    await tgSendText(
+      chatId,
+      `🧠 *Model Info*\n\n` +
+        `*Requested model:* \`${MODEL}\`\n\n` +
+        `This is the model name sent to Z.AI proxy.\n` +
+        `Z.AI may serve a different actual model — check the proxy log:\n\n` +
+        `\`tail -20 /tmp/anthropic_proxy.log\`\n\n` +
+        `Look for lines like:\n` +
+        `\`[PROXY] Response: requested=glm-5.2-plus actual=glm-4-plus ...\`\n\n` +
+        `The \`actual\` field shows what Z.AI really served.`,
+      "Markdown"
+    );
     return;
   }
 

@@ -540,7 +540,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       openaiReq.stream_options = { include_usage: true };
     }
 
-    console.log(`[PROXY] ${new Date().toISOString()} model=${openaiReq.model} msgs=${openaiMessages.length} tools=${openaiReq.tools?.length || 0} stream=${isStreaming}`);
+    console.log(`[PROXY] ${new Date().toISOString()} requested=${openaiReq.model} msgs=${openaiMessages.length} tools=${openaiReq.tools?.length || 0} stream=${isStreaming}`);
 
     try {
       const zaiResp = await fetch(`${ZAI_BASE_URL}/chat/completions`, {
@@ -580,10 +580,12 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       } else {
         // Non-streaming
         const data = await zaiResp.json();
+        // Z.AI may return a different model name than requested — log both for transparency
+        const actualModel = data.model || openaiReq.model;
         const anthropicResp = convertResponseToAnthropic(data, openaiReq.model);
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(anthropicResp));
-        console.log(`[PROXY] Response: stop=${anthropicResp.stop_reason} in=${anthropicResp.usage.input_tokens} out=${anthropicResp.usage.output_tokens} blocks=${anthropicResp.content.length}`);
+        console.log(`[PROXY] Response: requested=${openaiReq.model} actual=${actualModel} stop=${anthropicResp.stop_reason} in=${anthropicResp.usage.input_tokens} out=${anthropicResp.usage.output_tokens} blocks=${anthropicResp.content.length}`);
       }
     } catch (err: any) {
       console.error(`[PROXY] Fetch error:`, err.message);
